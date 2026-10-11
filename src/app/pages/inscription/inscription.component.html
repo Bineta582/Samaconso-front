@@ -1,0 +1,55 @@
+<h1>Créer votre compte abonné</h1>
+<p class="intro">Liez votre compteur SENELEC à SamaConso en quelques secondes.</p>
+
+<form [formGroup]="form" (ngSubmit)="soumettre()" novalidate>
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+
+  <div class="grille-2">
+    <div class="champ"><label for="nom">Nom</label>
+      <input id="nom" formControlName="nom" placeholder="Diop" />
+      @if (invalide('nom')) { <span class="erreur">Requis.</span> }</div>
+    <div class="champ"><label for="prenom">Prénom</label>
+      <input id="prenom" formControlName="prenom" placeholder="Awa" />
+      @if (invalide('prenom')) { <span class="erreur">Requis.</span> }</div>
+  </div>
+
+  <div class="champ"><label for="email">Adresse email</label>
+    <input id="email" type="email" formControlName="email" placeholder="awa.diop@email.com" />
+    @if (invalide('email')) { <span class="erreur">Adresse email invalide.</span> }</div>
+
+  <div class="grille-2">
+    <div class="champ"><label for="tel">Téléphone</label>
+      <input id="tel" formControlName="telephone" placeholder="+221 77 000 00 00" />
+      @if (invalide('telephone')) { <span class="erreur">Numéro sénégalais invalide.</span> }</div>
+    <div class="champ"><label for="cpt">N° de compteur SENELEC</label>
+      <input id="cpt" formControlName="numero_compteur" placeholder="SN-0245871" />
+      @if (invalide('numero_compteur')) { <span class="erreur">Format attendu : SN-0245871.</span> }</div>
+  </div>
+
+  <div class="champ">
+    <label>Type d'abonnement</label>
+    <div class="choix">
+      <button type="button" [class.actif]="form.controls.type_abonnement.value === 'menage'" (click)="choisirType('menage')">Ménage</button>
+      <button type="button" [class.actif]="form.controls.type_abonnement.value === 'petite_entreprise'" (click)="choisirType('petite_entreprise')">Petite entreprise</button>
+    </div>
+  </div>
+
+  <div class="grille-2">
+    <div class="champ"><label for="mdp">Mot de passe</label>
+      <input id="mdp" type="password" formControlName="password" placeholder="••••••••" autocomplete="new-password" />
+      @if (invalide('password')) { <span class="erreur">8 caractères minimum.</span> }</div>
+    <div class="champ"><label for="mdp2">Confirmer le mot de passe</label>
+      <input id="mdp2" type="password" formControlName="password_confirmation" placeholder="••••••••" autocomplete="new-password" />
+      @if (form.touched && form.hasError('different')) { <span class="erreur">Les mots de passe diffèrent.</span> }</div>
+  </div>
+
+  <button class="btn btn-primaire btn-bloc" type="submit" [disabled]="enCours()">
+    {{ enCours() ? 'Création…' : 'Créer mon compte' }}
+  </button>
+</form>
+
+<p class="bas">Déjà inscrit ? <a routerLink="/connexion">Se connecter</a></p>
+<style>
+  .intro { color: var(--texte-doux); margin: 6px 0 22px; }
+  .bas { text-align: center; margin-top: 20px; color: var(--texte-doux); }
+</style>

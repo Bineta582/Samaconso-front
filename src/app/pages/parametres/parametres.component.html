@@ -1,0 +1,61 @@
+<div class="page">
+  <div class="entete-page"><div><h1>Paramètres</h1><p>Gérez vos informations personnelles, votre sécurité et vos préférences.</p></div></div>
+  @if (message(); as m) { <div class="alerte-form" [class.succes-bloc]="m.type === 'ok'" [class.erreur-bloc]="m.type === 'ko'">{{ m.texte }}</div> }
+
+  <div class="grille-main">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <form class="carte" [formGroup]="profil" (ngSubmit)="enregistrerProfil()">
+        <div class="carte-tete"><h2>Informations personnelles</h2></div>
+        <div class="grille-2">
+          <div class="champ"><label>Nom</label><input formControlName="nom" /></div>
+          <div class="champ"><label>Prénom</label><input formControlName="prenom" /></div>
+          <div class="champ"><label>Adresse email</label><input type="email" formControlName="email" /></div>
+          <div class="champ"><label>Téléphone</label><input formControlName="telephone" /></div>
+        </div>
+        @if (!auth.estAdmin()) {
+          <div class="champ"><label>Type d'abonnement</label>
+            <div class="choix">
+              <button type="button" [class.actif]="profil.controls.type_abonnement.value === 'menage'" (click)="choisirType('menage')">Ménage</button>
+              <button type="button" [class.actif]="profil.controls.type_abonnement.value === 'petite_entreprise'" (click)="choisirType('petite_entreprise')">Petite entreprise</button>
+            </div></div>
+        }
+        <button class="btn btn-primaire" type="submit">Enregistrer les modifications</button>
+      </form>
+
+      <form class="carte" [formGroup]="securite" (ngSubmit)="changerMotDePasse()">
+        <div class="carte-tete"><div><h2>Sécurité</h2><p>Choisissez un mot de passe d'au moins 8 caractères.</p></div></div>
+        <div class="champ"><label>Mot de passe actuel</label><input type="password" formControlName="password_actuel" autocomplete="current-password" /></div>
+        <div class="grille-2">
+          <div class="champ"><label>Nouveau mot de passe</label><input type="password" formControlName="password" autocomplete="new-password" /></div>
+          <div class="champ"><label>Confirmer le nouveau mot de passe</label><input type="password" formControlName="password_confirmation" autocomplete="new-password" /></div>
+        </div>
+        @if (securite.touched && securite.hasError('different')) { <p class="erreur" style="margin-bottom:10px">Les mots de passe diffèrent.</p> }
+        <button class="btn btn-primaire" type="submit">Changer le mot de passe</button>
+      </form>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      @if (!auth.estAdmin()) {
+        <div class="carte">
+          <div class="carte-tete"><h2>Compteur associé</h2></div>
+          <div class="info"><span>Numéro de compteur</span><b>{{ u?.numero_compteur }}</b></div>
+          <div class="info"><span>Statut</span><span class="badge ok">{{ u?.statut_compteur ?? 'Actif' }}</span></div>
+          <div class="info"><span>Date d'installation</span><b>{{ u?.date_installation ?? '—' }}</b></div>
+          <div class="info"><span>Adresse</span><b>{{ u?.adresse ?? '—' }}</b></div>
+          <button class="btn btn-contour btn-bloc" style="margin-top:12px" (click)="signaler()">Signaler un problème</button>
+        </div>
+      }
+      <div class="carte">
+        <div class="carte-tete"><h2>Notifications</h2></div>
+        @for (p of libellesPrefs; track p.cle) {
+          <div class="pref"><span>{{ p.libelle }}</span>
+            <label class="interrupteur"><input type="checkbox" [checked]="prefs()[p.cle]" (change)="basculerPref(p.cle, $any($event.target).checked)" /><span></span></label></div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+  .info { display: flex; justify-content: space-between; padding: 10px 0; border-top: 1px solid var(--bordure); color: var(--texte-doux); } .info b { color: var(--texte); }
+  .pref { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--bordure); }
+</style>

@@ -1,0 +1,42 @@
+<div class="page">
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+  <div class="entete-page">
+    <div><h1>Vos alertes</h1><p>Anomalies détectées sur votre installation électrique.</p></div>
+    <div class="actions"><button class="btn btn-contour" (click)="toutesLues()"><app-icone nom="check" [taille]="16" />Tout marquer comme lu</button></div>
+  </div>
+
+  <div class="grille-kpi">@for (k of kpis(); track k.libelle) { <app-kpi [kpi]="k" /> }</div>
+
+  <div class="grille-main">
+    <div class="carte">
+      <div class="carte-tete">
+        <h2>Liste des alertes</h2>
+        <div class="onglets">
+          <button [class.actif]="filtre() === 'toutes'" (click)="choisirFiltre('toutes')">Toutes</button>
+          <button [class.actif]="filtre() === 'non_lues'" (click)="choisirFiltre('non_lues')">Non lues</button>
+        </div>
+      </div>
+      <div class="liste-alertes">
+        @for (a of alertes(); track a.id) {
+          <div class="ligne-alerte" [class.lue]="a.lue">
+            <span class="pastille-ico" [class]="classeAlerte(a.type)"><app-icone [nom]="iconeAlerte(a.type)" [taille]="18" /></span>
+            <div class="corps"><b>{{ a.titre }}</b><p>{{ a.message }}</p><small>{{ a.source }} · {{ a.date }}</small></div>
+            @if (a.lue) { <span class="badge">Lue</span> } @else { <button class="btn btn-contour btn-petit" (click)="lue(a)">Marquer comme lue</button> }
+          </div>
+        } @empty { <div class="etat-vide">Aucune alerte à afficher.</div> }
+      </div>
+    </div>
+
+    <div class="carte">
+      <div class="carte-tete"><div><h2>Seuils d'alerte</h2><p>Déclenchent une notification en cas de dépassement.</p></div></div>
+      @for (s of seuils(); track s.cle) {
+        <div class="seuil"><div><small>{{ s.libelle }}</small><br /><b>{{ s.valeur }} {{ s.unite }}</b></div><button class="btn-lien" (click)="modifierSeuil(s)">Modifier</button></div>
+      }
+      <div class="info"><app-icone nom="info" [taille]="16" /> Notification push ou SMS selon vos préférences (Paramètres).</div>
+    </div>
+  </div>
+</div>
+<style>
+  .seuil { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 1px solid var(--bordure); } .seuil small { color: var(--texte-doux); }
+  .info { margin-top: 14px; display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; color: var(--texte-doux); background: var(--fond); padding: 10px 12px; border-radius: 10px; }
+</style>

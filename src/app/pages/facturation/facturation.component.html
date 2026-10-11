@@ -1,0 +1,61 @@
+<div class="page">
+  <div class="entete-page"><div><h1>Facturation &amp; recharge</h1><p>Rechargez votre compteur Woyofal et suivez vos paiements.</p></div></div>
+
+  @if (solde(); as s) {
+    <div class="grille-kpi">
+      <div class="carte kpi"><span class="lib">Solde actuel</span><span class="val">{{ s.solde_kwh }} kWh</span><span class="det">≈ {{ s.solde_fcfa | fcfa }} restants</span></div>
+      <div class="carte kpi"><span class="lib">Autonomie estimée</span><span class="val">{{ s.autonomie_jours }} jours</span><span class="det">Au rythme de consommation actuel</span></div>
+      <div class="carte kpi"><span class="lib">Dernière recharge</span><span class="val">{{ s.derniere_recharge_fcfa | fcfa }}</span><span class="det">{{ s.derniere_recharge_info }}</span></div>
+      <div class="carte kpi"><span class="lib">Dépenses ce mois</span><span class="val">{{ s.depenses_mois_fcfa | fcfa }}</span><span class="det">{{ s.nb_recharges_mois }} recharges effectuées</span></div>
+    </div>
+  }
+
+  <div class="grille-main">
+    <form class="carte" (ngSubmit)="recharger()">
+      <div class="carte-tete"><div><h2>Recharger mon compteur Woyofal</h2><p>Compteur {{ auth.utilisateur()?.numero_compteur }} · solde actuel : {{ solde()?.solde_kwh }} kWh</p></div></div>
+      @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+      @if (succes()) { <div class="alerte-form succes-bloc">{{ succes() }}</div> }
+
+      <div class="champ"><label>Montant à recharger</label>
+        <div class="choix">@for (m of montantsRapides; track m) {
+          <button type="button" [class.actif]="!montantPerso && montant === m" (click)="choisirMontant(m)">{{ m | fcfa:false }} F</button> }</div></div>
+      <div class="champ"><label>Ou saisissez un montant personnalisé</label><input type="number" name="perso" [(ngModel)]="montantPerso" placeholder="Ex : 7 500 FCFA" min="500" /></div>
+
+      <div class="champ"><label>Moyen de paiement</label>
+        <div class="choix">@for (m of moyens; track m) { <button type="button" [class.actif]="moyen === m" (click)="moyen = m">{{ m }}</button> }</div></div>
+      @if (moyen !== 'Carte') {
+        <div class="champ"><label>Numéro {{ moyen }}</label><input name="numero" [(ngModel)]="numero" placeholder="+221 77 000 00 00" /></div>
+      }
+      <button class="btn btn-primaire btn-bloc" type="submit" [disabled]="enCours()">{{ enCours() ? 'Paiement en cours…' : 'Recharger ' + (montantFinal | fcfa) }}</button>
+      <p class="note">Woyofal est un service prépayé — chaque recharge génère un code à saisir sur votre compteur.</p>
+    </form>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="carte">
+        <div class="carte-tete"><h2>Moyens de paiement</h2></div>
+        @for (m of moyensEnregistres(); track m.id) {
+          <div class="moyen"><div><b>{{ m.libelle }}</b><br /><small>{{ m.detail }}</small></div>@if (m.defaut) { <span class="badge ok">DÉFAUT</span> }</div>
+        }
+      </div>
+      <div class="carte"><h2>Besoin d'aide ?</h2><p style="color:var(--texte-doux);margin:6px 0 12px">Un problème avec une recharge ou un code Woyofal ?</p>
+        <a class="btn btn-contour" href="mailto:support@samaconso.sn">Contacter le support</a></div>
+    </div>
+  </div>
+
+  <div class="carte">
+    <div class="carte-tete"><h2>Historique des transactions</h2></div>
+    <div class="tableau-wrap"><table>
+      <thead><tr><th>Date</th><th>Type</th><th>Montant</th><th>Moyen de paiement</th><th>Statut</th><th>Reçu</th></tr></thead>
+      <tbody>
+        @for (t of transactions(); track t.id) {
+          <tr><td>{{ t.date }}</td><td>{{ t.type }}</td><td>{{ t.montant | fcfa }}</td><td>{{ t.moyen }}</td>
+            <td><span class="badge" [class]="classeStatut(t.statut)">{{ libelleStatut(t.statut) }}</span></td>
+            <td>@if (t.statut === 'reussi') { <button class="btn-lien" (click)="recu(t)">Reçu</button> } @else { — }</td></tr>
+        } @empty { <tr><td colspan="6" class="etat-vide">Aucune transaction.</td></tr> }
+      </tbody></table></div>
+  </div>
+</div>
+<style>
+  .note { font-size: 12px; color: var(--texte-pale); margin-top: 12px; }
+  .moyen { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-top: 1px solid var(--bordure); } .moyen small { color: var(--texte-doux); }
+</style>

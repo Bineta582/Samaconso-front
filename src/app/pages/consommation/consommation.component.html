@@ -1,0 +1,52 @@
+<div class="page">
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+  <div class="entete-page">
+    <div><h1>Consommation détaillée</h1><p>Historique des mesures de votre compteur.</p></div>
+    <div class="actions">
+      <input class="pastille-periode" type="date" [(ngModel)]="debut" (change)="charger()" />
+      <input class="pastille-periode" type="date" [(ngModel)]="fin" (change)="charger()" />
+      <select class="pastille-periode" [(ngModel)]="equipementId" (change)="charger()">
+        <option value="">Tous les équipements</option>
+        @for (e of equipements(); track e.id) { <option [value]="e.id">{{ e.nom }}</option> }
+      </select>
+      <button class="btn btn-contour" (click)="exporter()"><app-icone nom="telecharger" [taille]="16" />Exporter</button>
+    </div>
+  </div>
+
+  @if (d(); as d) {
+    <div class="grille-kpi">@for (k of d.kpis; track k.libelle) { <app-kpi [kpi]="k" /> }</div>
+
+    <div class="carte">
+      <div class="carte-tete">
+        <h2>Courbe de consommation</h2>
+        <div class="onglets">
+          @for (g of grandeurs; track g.cle) { <button [class.actif]="grandeur() === g.cle" (click)="choisirGrandeur(g.cle)">{{ g.libelle }}</button> }
+        </div>
+      </div>
+      <div class="chart-box"><app-graphique type="line" [donnees]="courbe" [options]="options" /></div>
+    </div>
+
+    <div class="grille-main">
+      <div class="carte">
+        <div class="carte-tete"><h2>Historique des mesures</h2></div>
+        <div class="tableau-wrap">
+          <table>
+            <thead><tr><th>Date / heure</th><th>Tension</th><th>Courant</th><th>Puissance</th><th>Énergie</th><th>Fréq.</th></tr></thead>
+            <tbody>
+              @for (m of d.mesures; track m.date_heure) {
+                <tr><td>{{ m.date_heure }}</td><td>{{ m.tension }} V</td><td>{{ m.courant }} A</td><td>{{ m.puissance }} W</td><td>{{ m.energie }} kWh</td><td>{{ m.frequence }} Hz</td></tr>
+              } @empty { <tr><td colspan="6" class="etat-vide">Aucune mesure sur cette période.</td></tr> }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="carte">
+        <div class="carte-tete"><div><h2>Consommation par équipement</h2><p>Sur la période sélectionnée, en kWh</p></div></div>
+        @for (e of d.par_equipement; track e.libelle) {
+          <div class="ligne-eq"><div class="entete"><span>{{ e.libelle }}</span><b>{{ e.kwh }} kWh</b></div><div class="barre"><i [style.width.%]="((e.kwh ?? 0) / maxBarre) * 100"></i></div></div>
+        }
+      </div>
+    </div>
+  } @else if (!erreur()) { <div class="chargement">Chargement…</div> }
+</div>
+<style>.ligne-eq { margin-bottom: 14px; } .ligne-eq .entete { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }</style>

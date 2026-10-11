@@ -1,0 +1,60 @@
+<div class="page">
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+  <div class="entete-page">
+    <div><h1>Vos équipements</h1><p>Gérez les appareils reliés à votre installation et suivez leur consommation.</p></div>
+    <div class="actions"><button class="btn btn-primaire" (click)="formulaireOuvert.set(!formulaireOuvert())"><app-icone nom="plus" [taille]="16" />Ajouter un équipement</button></div>
+  </div>
+
+  @if (formulaireOuvert()) {
+    <form class="carte" [formGroup]="form" (ngSubmit)="ajouter()">
+      <div class="carte-tete"><h2>Nouvel équipement</h2></div>
+      <div class="grille-3">
+        <div class="champ"><label>Nom</label><input formControlName="nom" placeholder="Climatiseur chambre" /></div>
+        <div class="champ"><label>Pièce</label><input formControlName="piece" placeholder="Chambre" /></div>
+        <div class="champ"><label>Puissance nominale (W)</label><input type="number" formControlName="puissance_nominale" /></div>
+      </div>
+      <button class="btn btn-primaire" type="submit">Enregistrer</button>
+    </form>
+  }
+
+  <div class="grille-kpi">
+    <div class="carte kpi"><span class="lib">Équipements enregistrés</span><span class="val">{{ total() }}</span><span class="det">Répartis sur {{ pieces() }} pièces</span></div>
+    <div class="carte kpi"><span class="lib">Puissance installée totale</span><span class="val">{{ puissanceInstallee().toFixed(1) }} kW</span><span class="det">Somme des puissances nominales</span></div>
+    <div class="carte kpi"><span class="lib">Le plus énergivore</span><span class="val">{{ plusEnergivore()?.nom ?? '—' }}</span><span class="det">Consommation actuelle la plus élevée</span></div>
+    <div class="carte kpi"><span class="lib">Capteurs associés</span><span class="val">{{ avecCapteur() }}</span><span class="det">{{ sansCapteur() }} appareil(s) à configurer</span></div>
+  </div>
+
+  <div class="grille-main">
+    <div class="grille-eq" style="grid-template-columns: repeat(2, 1fr)">
+      @for (e of equipements(); track e.id) {
+        <div class="carte eq">
+          <div class="carte-tete">
+            <div><h2>{{ e.nom }}</h2><p>{{ e.piece }}</p></div>
+            <span class="badge" [class.ok]="e.etat === 'marche'">{{ e.etat === 'marche' ? 'Marche' : 'Éteint' }}</span>
+          </div>
+          <div class="ligne"><span>Puissance nominale</span><b>{{ e.puissance_nominale }} W</b></div>
+          <div class="ligne"><span>Conso. actuelle</span><b>{{ e.conso_actuelle === null ? '—' : e.conso_actuelle.toFixed(2) }} kW</b></div>
+          <p class="capteur">{{ e.capteur ? 'Capteur ' + e.capteur + ' associé' : 'Aucun capteur — Configurer →' }}</p>
+          <div class="actions-eq">
+            @if (e.capteur) { <button class="btn btn-contour btn-petit" (click)="basculer(e)">{{ e.etat === 'marche' ? 'Éteindre (relais)' : 'Allumer (relais)' }}</button> }
+            <button class="btn-lien" title="Supprimer" (click)="supprimer(e)"><app-icone nom="corbeille" [taille]="16" /></button>
+          </div>
+        </div>
+      } @empty { @if (!chargement()) { <div class="carte etat-vide">Aucun équipement enregistré.</div> } }
+    </div>
+
+    <div class="carte">
+      <div class="carte-tete"><h2>Résumé de l'installation</h2></div>
+      <p class="resume"><b>{{ puissanceInstallee().toFixed(1) }} kW</b> répartis sur {{ total() }} équipements, {{ pieces() }} pièces</p>
+      <h3 class="sous">Top consommateurs (puissance)</h3>
+      @for (e of top(); track e.id) { <div class="ligne"><span>{{ e.nom }}</span><b>{{ e.puissance_nominale }} W</b></div> }
+      @if (sansCapteur() > 0) { <p class="capteur">{{ sansCapteur() }} équipement sans capteur</p> }
+    </div>
+  </div>
+</div>
+<style>
+  .ligne { display: flex; justify-content: space-between; padding: 7px 0; font-size: 13.5px; color: var(--texte-doux); } .ligne b { color: var(--texte); }
+  .capteur { margin-top: 10px; font-size: 12.5px; color: var(--texte-pale); }
+  .actions-eq { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .sous { font-size: 13px; margin: 18px 0 6px; } .resume { color: var(--texte-doux); }
+</style>

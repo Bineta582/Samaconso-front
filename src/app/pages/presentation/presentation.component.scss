@@ -1,0 +1,34 @@
+:host { display: block; }
+.entete { display: flex; align-items: center; gap: 24px; padding: 16px 48px; position: sticky; top: 0; background: var(--fond); border-bottom: 1px solid var(--bordure); z-index: 10; }
+.logo { display: flex; align-items: center; gap: 10px; font: 800 20px Manrope; color: var(--texte); }
+.logo i { width: 32px; height: 32px; border-radius: 9px; background: var(--jaune); display: grid; place-items: center; font-style: normal; }
+nav { display: flex; gap: 6px; margin-left: 24px; flex: 1; }
+nav button { background: none; border: 0; padding: 8px 12px; font-weight: 500; color: var(--texte-doux); border-radius: 8px; &:hover { background: var(--bordure); } }
+.acces { display: flex; gap: 10px; }
+
+.hero { background: var(--vert-fonce); color: var(--menthe); display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; padding: 72px 48px; }
+.etiquette { display: inline-block; padding: 6px 14px; border-radius: 99px; background: rgba(255,255,255,.08); font-size: 12.5px; font-weight: 600; margin-bottom: 20px; }
+.hero h1 { color: #fff; font-size: 54px; line-height: 1.08; margin-bottom: 18px; span { color: var(--jaune); } }
+.hero p { max-width: 520px; line-height: 1.65; font-size: 16px; }
+.actions { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; &.centre { justify-content: center; } }
+.btn-contour.clair { background: transparent; color: #fff; border-color: rgba(255,255,255,.3); &:hover { background: rgba(255,255,255,.08); } }
+.hero-carte { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 20px; padding: 24px; small { color: #7fa096; } }
+.chiffres { display: flex; gap: 40px; margin: 14px 0 22px; span { display: block; font-size: 12px; color: #7fa096; } b { color: #fff; font: 800 26px Manrope; } }
+.barres { display: flex; align-items: flex-end; gap: 6px; height: 110px; i { flex: 1; background: var(--vert-clair); border-radius: 5px 5px 0 0; opacity: .85; } i:nth-child(12) { background: var(--jaune); } }
+
+.bloc { padding: 72px 48px; max-width: 1180px; margin: 0 auto; text-align: center; h2 { font-size: 32px; margin-bottom: 14px; } > p { color: var(--texte-doux); max-width: 720px; margin: 0 auto; line-height: 1.7; } }
+.bloc.sombre { max-width: none; background: var(--vert); color: var(--menthe); h2, h3 { color: #fff; } }
+.bloc.cta { padding-bottom: 88px; }
+.grille { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 36px; text-align: left; &.deux { grid-template-columns: repeat(2, 1fr); } }
+.carte h3 { font-size: 17px; margin-bottom: 8px; } .carte p { color: var(--texte-doux); line-height: 1.6; }
+.etapes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 1100px; margin: 40px auto 0; text-align: left; }
+.etape p { line-height: 1.6; margin-top: 6px; }
+.num { width: 38px; height: 38px; border-radius: 50%; background: var(--jaune); color: var(--vert-fonce); display: grid; place-items: center; font-weight: 800; margin-bottom: 12px; }
+.pied { text-align: center; padding: 28px; color: var(--texte-pale); border-top: 1px solid var(--bordure); font-size: 13px; }
+
+@media (max-width: 900px) {
+  .entete { padding: 12px 16px; nav { display: none; } .acces { margin-left: auto; } }
+  .hero { grid-template-columns: 1fr; padding: 40px 20px; h1 { font-size: 38px; } }
+  .bloc { padding: 48px 20px; }
+  .grille, .grille.deux, .etapes { grid-template-columns: 1fr; }
+}

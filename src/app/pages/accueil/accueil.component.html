@@ -1,0 +1,52 @@
+<div class="page">
+  @if (erreur()) {
+    <div class="alerte-form erreur-bloc">Impossible de charger vos données. Vérifiez que l'API Laravel est démarrée.</div>
+  } @else if (!d()) {
+    <div class="chargement">Chargement…</div>
+  } @else {
+    <div class="entete-page">
+      <div>
+        <h1>Bonjour, {{ d()!.nom_affiche }}</h1>
+        <p>Voici un aperçu de votre consommation aujourd'hui, {{ d()!.date_label }}.</p>
+      </div>
+      <div class="actions"><a class="btn btn-primaire" routerLink="/tableau-de-bord">Voir le tableau de bord →</a></div>
+    </div>
+
+    <div class="grille-kpi">
+      <!-- 1ʳᵉ carte alimentée en direct (toutes les 5 s) -->
+      <div class="carte kpi">
+        <span class="lib">Consommation instantanée</span>
+        <span class="val">{{ (puissance()?.kw ?? 0).toFixed(2) }} kW</span>
+        <span class="det" [class.hausse]="(puissance()?.variation ?? 0) > 0" [class.baisse]="(puissance()?.variation ?? 0) < 0">
+          {{ (puissance()?.variation ?? 0) > 0 ? '▲' : '▼' }} {{ Math.abs(puissance()?.variation ?? 0) }}% vs hier à la même heure
+        </span>
+      </div>
+      @for (k of d()!.kpis; track k.libelle) { <app-kpi [kpi]="k" /> }
+    </div>
+
+    <div class="grille-main">
+      <div class="carte">
+        <div class="carte-tete"><div><h2>Consommation — 24 dernières heures</h2><p>Puissance moyenne par tranche horaire (kW)</p></div></div>
+        <div class="chart-box"><app-graphique type="line" [donnees]="courbe" [options]="options" /></div>
+      </div>
+
+      <div class="carte">
+        <div class="carte-tete"><h2>Alertes récentes</h2></div>
+        <div class="liste-alertes">
+          @for (a of d()!.alertes_recentes; track a.id) {
+            <div class="ligne-alerte">
+              <span class="pastille-ico" [class]="classeAlerte(a.type)"><app-icone [nom]="iconeAlerte(a.type)" [taille]="18" /></span>
+              <div class="corps"><b>{{ a.titre }}</b><br /><small>{{ a.date }}</small></div>
+            </div>
+          } @empty { <div class="etat-vide">Aucune alerte récente.</div> }
+        </div>
+        <a routerLink="/alertes">Voir toutes les alertes →</a>
+      </div>
+    </div>
+
+    <div class="carte">
+      <div class="carte-tete"><h2>Répartition par équipement</h2></div>
+      <app-repartition [repartition]="d()!.repartition" />
+    </div>
+  }
+</div>

@@ -1,0 +1,69 @@
+<header class="entete">
+  <a class="logo" routerLink="/"><i>⚡</i> SamaConso</a>
+  <nav>
+    <button type="button" (click)="aller('fonctionnalites')">Fonctionnalités</button>
+    <button type="button" (click)="aller('fonctionnement')">Comment ça marche</button>
+    <button type="button" (click)="aller('public')">Pour qui ?</button>
+  </nav>
+  <div class="acces">
+    <a class="btn btn-contour" routerLink="/connexion">Se connecter</a>
+    <a class="btn btn-jaune" routerLink="/inscription">S'inscrire</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-texte">
+    <span class="etiquette">Plateforme proposée aux abonnés SENELEC</span>
+    <h1>Votre énergie,<br /><span>sous contrôle.</span></h1>
+    <p>SamaConso vous montre en temps réel où part votre électricité : par appareil, par heure, en FCFA. Fini les coupures Woyofal sans préavis et les factures inexpliquées.</p>
+    <div class="actions">
+      <a class="btn btn-jaune" routerLink="/inscription">Créer mon compte</a>
+      <a class="btn btn-contour clair" routerLink="/connexion">J'ai déjà un compte</a>
+    </div>
+  </div>
+  <div class="hero-carte">
+    <small>Consommation — 24 dernières heures</small>
+    <div class="chiffres">
+      <div><span>Puissance instantanée</span><b>1.24 kW</b></div>
+      <div><span>Coût estimé aujourd'hui</span><b>3 250 FCFA</b></div>
+    </div>
+    <div class="barres">@for (h of [3,4,3,5,6,5,7,9,8,6,7,10,12,9,8,7]; track $index) { <i [style.height.%]="h * 8"></i> }</div>
+  </div>
+</section>
+
+<section class="bloc probleme">
+  <h2>Le constat</h2>
+  <p>Le compteur Woyofal n'affiche qu'un solde de crédit : pas de détail par équipement, pas d'historique exploitable, pas d'alerte fiable avant l'épuisement. Résultat : des abonnés coupés sans préavis et des dépenses difficiles à comprendre. SamaConso comble ce manque grâce à l'Internet des objets.</p>
+</section>
+
+<section id="fonctionnalites" class="bloc">
+  <h2>Ce que vous pouvez faire</h2>
+  <div class="grille">
+    @for (f of fonctionnalites; track f.titre) { <article class="carte"><h3>{{ f.titre }}</h3><p>{{ f.texte }}</p></article> }
+  </div>
+</section>
+
+<section id="fonctionnement" class="bloc sombre">
+  <h2>Comment ça marche</h2>
+  <div class="etapes">
+    @for (e of etapes; track e.n) { <div class="etape"><span class="num">{{ e.n }}</span><h3>{{ e.titre }}</h3><p>{{ e.texte }}</p></div> }
+  </div>
+</section>
+
+<section id="public" class="bloc">
+  <h2>Pour qui ?</h2>
+  <div class="grille deux">
+    @for (p of public; track p.titre) { <article class="carte"><h3>{{ p.titre }}</h3><p>{{ p.texte }}</p></article> }
+  </div>
+</section>
+
+<section class="bloc cta">
+  <h2>Prêt à reprendre le contrôle ?</h2>
+  <p>Liez votre compteur SENELEC en quelques secondes.</p>
+  <div class="actions centre">
+    <a class="btn btn-primaire" routerLink="/inscription">Créer mon compte</a>
+    <a class="btn btn-contour" routerLink="/connexion">Se connecter</a>
+  </div>
+</section>
+
+<footer class="pied">© {{ annee }} SamaConso — Projet de fin de cycle, Licence Génie Logiciel, ISI Dakar.</footer>

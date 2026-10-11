@@ -1,0 +1,56 @@
+<div class="page">
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+  @if (d(); as d) {
+    <div class="entete-page">
+      <div><h1>Supervision de la plateforme</h1><p>Vue globale des abonnés, compteurs, capteurs et alertes du réseau SamaConso.</p></div>
+      <div class="actions"><span class="pastille-periode">1 – 30 sept.</span><button class="btn btn-contour"><app-icone nom="telecharger" [taille]="16" />Rapport</button></div>
+    </div>
+
+    <div class="grille-kpi">@for (k of d.kpis; track k.libelle) { <app-kpi [kpi]="k" /> }</div>
+
+    <div class="grille-main">
+      <div class="carte">
+        <div class="carte-tete"><div><h2>Consommation globale du réseau</h2><p>Cumul de tous les abonnés, en MWh</p></div>
+          <div class="onglets">@for (p of periodes; track p.cle) { <button [class.actif]="periode() === p.cle" (click)="choisir(p.cle)">{{ p.libelle }}</button> }</div></div>
+        <div class="chart-box"><app-graphique type="line" [donnees]="courbe" [options]="options" /></div>
+      </div>
+      <div class="carte">
+        <div class="carte-tete"><h2>Répartition des abonnés</h2></div>
+        <app-repartition [repartition]="d.repartition_abonnes" />
+      </div>
+    </div>
+
+    <div class="grille-main">
+      <div class="carte">
+        <div class="carte-tete"><h2>Abonnés récents</h2><a routerLink="/admin/abonnes">Tout voir →</a></div>
+        <div class="tableau-wrap"><table>
+          <thead><tr><th>Abonné</th><th>Compteur</th><th>Conso.</th><th>Statut</th></tr></thead>
+          <tbody>@for (a of d.abonnes_recents; track a.email) {
+            <tr><td><div style="display:flex;gap:10px;align-items:center"><span class="avatar" style="width:32px;height:32px;font-size:11px">{{ a.initiales }}</span><div><b>{{ a.nom }}</b><br /><small style="color:var(--texte-pale)">{{ a.email }}</small></div></div></td>
+              <td>{{ a.compteur }}</td><td>{{ a.conso }}</td><td><span class="badge" [class]="classeStatut(a.statut)">{{ a.statut }}</span></td></tr>
+          }</tbody></table></div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="carte">
+          <div class="carte-tete"><h2>État des capteurs</h2></div>
+          @for (c of d.etat_capteurs; track c.libelle) {
+            <div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>{{ c.libelle }}</span><b>{{ c.actifs }} / {{ c.total }}</b></div>
+              <div class="barre"><i [style.width.%]="pct(c.actifs, c.total)"></i></div></div>
+          }
+        </div>
+        <div class="carte">
+          <div class="carte-tete"><h2>Alertes globales</h2><a routerLink="/admin/alertes">Voir toutes les alertes →</a></div>
+          <div class="liste-alertes">@for (a of d.alertes_globales; track a.titre) {
+            <div class="ligne-alerte"><span class="pastille-ico" [class.rouge]="a.critique"><app-icone nom="alertes" [taille]="18" /></span><div class="corps"><b>{{ a.titre }}</b><p>{{ a.detail }}</p></div></div>
+          }</div>
+        </div>
+        <div class="carte">
+          <div class="carte-tete"><h2>Compteurs par statut</h2></div>
+          @for (c of d.compteurs_par_statut; track c.libelle) { <div style="display:flex;justify-content:space-between;padding:7px 0"><span>{{ c.libelle }}</span><b>{{ c.valeur }}</b></div> }
+          <small style="color:var(--texte-pale)">{{ d.derniere_synchro }}</small>
+        </div>
+      </div>
+    </div>
+  } @else if (!erreur()) { <div class="chargement">Chargement…</div> }
+</div>

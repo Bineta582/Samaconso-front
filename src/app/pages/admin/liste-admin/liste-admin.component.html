@@ -1,0 +1,17 @@
+<div class="page">
+  <div class="entete-page"><div><h1>{{ titre }}</h1><p>{{ filtrees().length }} élément(s)</p></div>
+    <div class="actions"><input class="pastille-periode" type="search" placeholder="Filtrer…" (input)="recherche.set($any($event.target).value)" /></div></div>
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+  <div class="carte">
+    @if (chargement()) { <div class="chargement">Chargement…</div> } @else {
+      <div class="tableau-wrap"><table>
+        <thead><tr>@for (c of colonnes(); track c) { <th>{{ entete(c) }}</th> }</tr></thead>
+        <tbody>
+          @for (l of filtrees(); track $index) {
+            <tr>@for (c of colonnes(); track c) {
+              <td>@if (estStatut(c)) { <span class="badge" [class]="classe(l[c])">{{ l[c] }}</span> } @else { {{ l[c] }} }</td> }</tr>
+          } @empty { <tr><td [attr.colspan]="colonnes().length || 1" class="etat-vide">Aucun résultat.</td></tr> }
+        </tbody></table></div>
+    }
+  </div>
+</div>

@@ -1,0 +1,39 @@
+<div class="page">
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+  <div class="entete-page">
+    <div><h1>Vos prédictions</h1><p>Estimations basées sur votre historique, modèle Random Forest.</p></div>
+    <div class="actions"><button class="btn btn-primaire" (click)="relancer()" [disabled]="analyseEnCours()">{{ analyseEnCours() ? 'Analyse en cours…' : "Relancer l'analyse" }}</button></div>
+  </div>
+
+  @if (d(); as d) {
+    <div class="grille-kpi">@for (k of d.kpis; track k.libelle) { <app-kpi [kpi]="k" /> }</div>
+
+    <div class="carte">
+      <div class="carte-tete">
+        <h2>Prévision de consommation</h2>
+        <div class="onglets">@for (p of periodes; track p.cle) { <button [class.actif]="periode() === p.cle" (click)="choisir(p.cle)">{{ p.libelle }}</button> }</div>
+      </div>
+      <div class="chart-box"><app-graphique type="line" [donnees]="courbe" [options]="options" /></div>
+    </div>
+
+    <div class="grille-main">
+      <div class="carte">
+        <div class="carte-tete"><h2>Détail des prédictions</h2></div>
+        <div class="tableau-wrap"><table>
+          <thead><tr><th>Période</th><th>Conso. prévue</th><th>Coût prévu</th><th>Précision</th></tr></thead>
+          <tbody>
+            @for (p of d.detail; track p.periode) {
+              <tr><td><b>{{ p.periode }}</b><br /><small style="color:var(--texte-pale)">{{ p.modele }}</small></td><td>{{ p.conso_prevue_kwh }} kWh</td><td>{{ p.cout_prevu_fcfa | fcfa }}</td>
+                  <td><span class="badge" [class.ok]="p.precision >= 90" [class.warn]="p.precision < 90">{{ p.precision }}%</span></td></tr>
+            }
+          </tbody></table></div>
+      </div>
+      <div class="carte">
+        <div class="carte-tete"><h2>Recommandations</h2></div>
+        @for (r of d.recommandations; track r.id) {
+          <div class="reco"><span class="badge" [class]="r.priorite">{{ r.priorite.toUpperCase() }}</span><b>{{ r.titre }}</b><small>{{ r.generee }}</small></div>
+        } @empty { <div class="etat-vide">Aucune recommandation pour le moment.</div> }
+      </div>
+    </div>
+  } @else if (!erreur()) { <div class="chargement">Chargement…</div> }
+</div>

@@ -1,0 +1,36 @@
+<h1>Bon retour parmi nous</h1>
+<p class="intro">Connectez-vous pour suivre votre consommation.</p>
+
+<form [formGroup]="form" (ngSubmit)="soumettre()" novalidate>
+  @if (erreur()) { <div class="alerte-form erreur-bloc">{{ erreur() }}</div> }
+  @if (info()) { <div class="alerte-form succes-bloc">{{ info() }}</div> }
+
+  <div class="champ">
+    <label for="email">Adresse email</label>
+    <input id="email" type="email" formControlName="email" placeholder="awa.diop@email.com" autocomplete="username" />
+    @if (form.controls.email.touched && form.controls.email.invalid) { <span class="erreur">Saisissez une adresse email valide.</span> }
+  </div>
+
+  <div class="champ">
+    <label for="mdp">Mot de passe</label>
+    <input id="mdp" type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password" />
+    @if (form.controls.password.touched && form.controls.password.invalid) { <span class="erreur">Mot de passe requis (6 caractères minimum).</span> }
+  </div>
+
+  <div class="options">
+    <label class="rester"><input type="checkbox" formControlName="rester" /> Se souvenir de moi</label>
+    <button type="button" class="btn-lien" (click)="motDePasseOublie()">Mot de passe oublié ?</button>
+  </div>
+
+  <button class="btn btn-primaire btn-bloc" type="submit" [disabled]="enCours()">
+    {{ enCours() ? 'Connexion…' : 'Se connecter' }}
+  </button>
+</form>
+
+<p class="bas">Pas encore de compte ? <a routerLink="/inscription">S'inscrire</a></p>
+<style>
+  .intro { color: var(--texte-doux); margin: 6px 0 26px; }
+  .options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 13px; }
+  .rester { display: flex; gap: 8px; align-items: center; color: var(--texte-doux); }
+  .bas { text-align: center; margin-top: 22px; color: var(--texte-doux); }
+</style>
